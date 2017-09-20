@@ -21,7 +21,9 @@ function grade(payload) {
   $.ajax({
     method: 'POST',
     url: 'tbd',
-    data: payload
+    dataType: 'json',
+    contentType: 'application/json',
+    data: JSON.stringify(payload)
   })
   .done((res) => { console.log(res); })
   .catch((err) => { console.log(err); });
