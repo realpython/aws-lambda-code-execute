@@ -20,11 +20,22 @@ $('form').on('submit', (event) => {
 function grade(payload) {
   $.ajax({
     method: 'POST',
-    url: 'tbd',
+    url: 'https://r8048dkaol.execute-api.us-east-1.amazonaws.com/v1/execute',
     dataType: 'json',
     contentType: 'application/json',
     data: JSON.stringify(payload)
   })
-  .done((res) => { console.log(res); })
-  .catch((err) => { console.log(err); });
+  .done((res) => {
+    let message = 'Incorrect. Please try again.';
+    if (res) {
+      message = 'Correct!';
+    }
+    $('.answer').html(message);
+    console.log(res);
+    console.log(message);
+  })
+  .catch((err) => {
+    $('.answer').html('Something went terribly wrong!');
+    console.log(err);
+  });
 }
