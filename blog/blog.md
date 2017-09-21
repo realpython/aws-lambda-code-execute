@@ -21,7 +21,7 @@ Use cases:
 | Image added to S3            | Image is processed       |
 | HTTP Request via API Gateway | HTTP Response            |
 | Log file added to Cloudwatch | Analyze the log          |
-| Scheduled event              | Backing up files         |
+| Scheduled event              | Back up files            |
 | Scheduled event              | Synchronization of files |
 
 > **NOTE:** For more examples, review the [Examples of How to Use AWS Lambda](http://docs.aws.amazon.com/lambda/latest/dg/use-cases.html) guide from AWS.
@@ -54,9 +54,19 @@ Once done, open the project in your code editor. Let's quickly review the code. 
 
 ## Lambda Setup
 
-Within the [AWS Console](https://console.aws.amazon.com), navigate to the main [Lambda page](https://console.aws.amazon.com/lambda) and click "Create a function". In the "Select blueprint" menu, click "Author from scratch" to start with a blank function. We'll set up the API Gateway integration later, so within the "Configure Triggers" simply click "Next".
+Within the [AWS Console](https://console.aws.amazon.com), navigate to the main [Lambda page](https://console.aws.amazon.com/lambda) and click "Create a function".
+
+ADD IMAGE
+
+In the "Select blueprint" menu, click "Author from scratch" to start with a blank function.
+
+ADD IMAGE
+
+We'll set up the API Gateway integration later, so within the "Configure Triggers" simply click "Next".
 
 Give the function a name, like `code_execute_python`, and add a basic description - `Execute user-supplied Python code`. Select "Python 3.6" in the "Runtime" drop-down.
+
+ADD IMAGE
 
 Within the inline code editor, update the `lambda_handler` - which is the default entry point for Lambda - function definition with:
 
@@ -85,9 +95,13 @@ def lambda_handler(event, context):
     return False
 ```
 
-Here, we parse the JSON request body, passing the supplied code along with some test code - `sum(1,1)` - to the [exec](https://docs.python.org/3/library/functions.html#exec) function - which simply executes the string as Python code. Then, we simply ensure the actual results are the same as the expected and return the appropriate response.
+Here, we parse the JSON request body, passing the supplied code along with some test code - `sum(1,1)` - to the [exec](https://docs.python.org/3/library/functions.html#exec) function - which simply executes the string as Python code. Then, we simply ensure the actual results are the same as what's expected - e.g., 2 - and return the appropriate response.
 
-Under "Lambda function handler and role", leave the default handler and then set the select "Create a new Role from template(s)" from the drop-down. Enter a "Role name", like `api_gateway_access`, and select " Simple Microservice permissions" for the "Policy templates", which provides access to [API Gateway](https://aws.amazon.com/api-gateway/).
+ADD IMAGE
+
+Under "Lambda function handler and role", leave the default handler and then select "Create a new Role from template(s)" from the drop-down. Enter a "Role name", like `api_gateway_access`, and select " Simple Microservice permissions" for the "Policy templates", which provides access to API Gateway.
+
+ADD IMAGE
 
 Click "Next". And then create the function after a quick review.
 
@@ -112,23 +126,42 @@ With that, we can move on to configuring the API Gateway to trigger the Lambda f
 Steps:
 
 1. Create the API
-1. Test
+1. Test it
 1. Enable CORS
 1. Deploy the API
+1. Test via cURL
 
 ### Create the API
 
-To start, from the [API Gateway page](https://console.aws.amazon.com/apigateway), click the "Get Started" button to create a new API. Select "New API", and then provide a descriptive name, like `code_execute_api`. Then, create the API.
+To start, from the [API Gateway page](https://console.aws.amazon.com/apigateway), click the "Get Started" button to create a new API.
 
-Select "Create Resource" from the "Actions" drop-down. Name the resource `execute`, and then click "Create Resource". With the resource highlighted, select "Create Method" from the "Actions" drop-down. Choose "POST" from the method drop-down. Click the checkmark next to it.
+ADD IMAGE
+
+Select "New API", and then provide a descriptive name, like `code_execute_api`. Then, create the API.
+
+ADD IMAGE
+
+Select "Create Resource" from the "Actions" drop-down. Name the resource `execute`, and then click "Create Resource".
+
+ADD IMAGE
+
+With the resource highlighted, select "Create Method" from the "Actions" drop-down. Choose "POST" from the method drop-down. Click the checkmark next to it.
+
+ADD IMAGE
 
 In the "Setup" step, select "Lambda Function" as the "Integration type", select the "us-east-1" region in the drop-down, and enter the name of the Lambda function that you just created.
 
+ADD IMAGE
+
 Click "Save", and then click "OK" to give permission to the API Gateway to run your Lambda function.
 
-### Test
+### Test it
 
-To test, click on the lightning bolt that says "Test". Scroll down to the "Request Body" input and add the same JSON code we used with the Lambda function:
+To test, click on the lightning bolt that says "Test".
+
+ADD IMAGE
+
+Scroll down to the "Request Body" input and add the same JSON code we used with the Lambda function:
 
 ```json
 {
@@ -144,19 +177,25 @@ Click "Test". You should see something similar to:
 
 Next, we need to enable [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) so that we can POST to the API endpoint from another domain.
 
-With the resource highlighted, select "Enable CORS" from the "Actions" drop-down. For now, just use the defaults since we're still testing. It's important to note, that in production, you will want to replace `'*'` with the actual domain name of your website for "Access-Control-Allow-Origin*".
+With the resource highlighted, select "Enable CORS" from the "Actions" drop-down. For now, just use the defaults since we're still testing the API. It's important to note, that in production, you will want to replace `'*'` with the actual domain of your website for "Access-Control-Allow-Origin*".
 
 Click the "Enable CORS and replace existing CORS headers" button.
 
+ADD IMAGE
+
 ### Deploy the API
 
-Finally, to deploy, select "Deploy API" from the "Actions" drop-down. Create a new "Deployment stage". Name it 'v1'. API gateway will generate a random subdomain for the API endpoint URL, and the stage name will be added to the end of the URL. You should now be able to make POST requests to a similar URL:
+Finally, to deploy, select "Deploy API" from the "Actions" drop-down. Create a new "Deployment stage". Name it 'v1'.
+
+ADD IMAGE
+
+API gateway will generate a random subdomain for the API endpoint URL, and the stage name will be added to the end of the URL. You should now be able to make POST requests to a similar URL:
 
 ```
 https://r8048dkaol.execute-api.us-east-1.amazonaws.com/v1/execute
 ```
 
-Test via cURL:
+### Test via cURL:
 
 ```sh
 $ curl -H "Content-Type: application/json" -X POST -d '{"answer":"def sum(x,y):\n    return x+y"}' https://r8048dkaol.execute-api.us-east-1.amazonaws.com/v1/execute
@@ -164,7 +203,7 @@ $ curl -H "Content-Type: application/json" -X POST -d '{"answer":"def sum(x,y):\
 
 ## Update the Form
 
-Now, to update the form, first add the URL to the `grade` function in *assets/main.js*:
+Now, to update the form, to send the POST request to the API Gateway endpoint, first add the URL to the `grade` function in *assets/main.js*:
 
 ```javascript
 function grade(payload) {
@@ -208,25 +247,30 @@ function grade(payload) {
 }
 ```
 
-Now, if the request is a success, then the appropriate message will be added to an HTML element with the class of `answer`. Add this element, just below the HTML form within *index.html*:
+Now, if the request is a success, the the appropriate message will be added - via the jQuery [html](http://api.jquery.com/html/) method - to an HTML element with the class of `answer`. Add this element, just below the HTML form within *index.html*:
 
 ```html
-...
-<form>
-  <div class="form-group">
-    <div id="editor" class="ace-editor"># Enter your code here.</div>
-  </div>
-  <button type="submit" class="btn btn-primary">Run Code</button>
-</form>
-<br>
 <h5 class="answer"></h5>
-...
+```
+
+Let's add a bit of style as well to the *assets/main.css* file:
+
+```css
+.answer {
+  padding-top: 30px;
+  color: #dc3545;
+  font-style: italic;
+}
 ```
 
 Test it out!
 
+ADD IMAGE
+
 ## Next Steps
 
-1. Production? 
+1. *Production*: Think about what's required for a more robust, production-read application - HTTPS, authentication, data store. How would you implement these within AWS? Which services can/would you use?
+1. *Dynamic*: Right now the Lambda function can only be used to test the `sum` function. How could you make this dynamic, so that it can be used to test any code challenge? Try adding a [data attribute](https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes) to the DOM, so that when a user submits an exercise the test code plus solution is sent along with the POST request.
+1. *Stack trace*: Instead of just responding with `true` or `false`, send along the entire stack trace and then add it to the DOM when the answer is incorrect.
 
-Most applications will require more robust solutions with HTTPS, authentication, and data stores.
+Thanks for reading. Add comments and/or questions below. Cheers!
