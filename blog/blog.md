@@ -1,10 +1,12 @@
+WIP
+
 # Code Evaluation with AWS Lambda and API Gateway
 
-This tutorial details how [AWS Lambda](https://aws.amazon.com/lambda/) and [API Gateway](https://aws.amazon.com/api-gateway/) can be used to develop a simple code evaluation API. End users will be able to submit code, via a form submission, which is then executed securely by a Lambda function.
+This tutorial details how [AWS Lambda](https://aws.amazon.com/lambda/) and [API Gateway](https://aws.amazon.com/api-gateway/) can be used to develop a simple code evaluation API, where the end users submit code, via an AJAX form submission, which is then executed securely by a Lambda function.
 
 ADD IMAGE
 
-> **WARNING:** The code found in this tutorial is used to build toy app for a proof of concept and is not meant for production use.
+> **WARNING:** The code found in this tutorial is used to build toy app to prototype a proof of concept and is not meant for production use.
 
 This tutorial assumes that you already have an account set up with [AWS](https://aws.amazon.com/). Also, we will use the `US East (N. Virginia)` / `us-east-1` region. Feel free to use the region of your choice. For more info, review the [Regions and Availability Zones](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html) guide.
 
@@ -12,7 +14,7 @@ This tutorial assumes that you already have an account set up with [AWS](https:/
 
 Amazon Web Services (AWS) Lambda is an on-demand compute service that lets you run code in response to events or HTTP requests.
 
-For example:
+Use cases:
 
 | Event                        | Action                   |
 |------------------------------|--------------------------|
@@ -26,7 +28,7 @@ For example:
 
 In other words, you can run scripts and apps without having to provision or manage servers in a seemingly infinitely-scalable environment where you pay only for usage. This is "[serverless](https://martinfowler.com/articles/serverless.html)" computing in a nut shell. For our purposes, AWS Lambda is a perfect solution for running user-supplied code quickly, securely, and cheaply.
 
-As of writing, Lambda supports code written in JavaScript (Node.js), Python, Java, and C#.
+As of writing, Lambda [supports](https://aws.amazon.com/lambda/faqs/) code written in JavaScript (Node.js), Python, Java, and C#.
 
 ## Project Setup
 
@@ -48,7 +50,7 @@ Open the *index.html* file in your browser of choice:
 
 ![](aws-lambda-code-execute-v1.png)
 
-Once done, open the project in your code editor. Let's quickly review the code. Essentially, we just have a simple HTML form styled with [Bootstrap](http://getbootstrap.com/). The input field is replaced with [Ace](https://ace.c9.io/), an embeddable code editor, which provides basic syntax highlighting. Finally, within *assets/main.js*, a jQuery event handler is wired up to grab the Ace editor and submit it via an AJAX request.
+Once done, open the project in your code editor. Let's quickly review the code. Essentially, we just have a simple HTML form styled with [Bootstrap](http://getbootstrap.com/). The input field is replaced with [Ace](https://ace.c9.io/), an embeddable code editor, which provides basic syntax highlighting. Finally, within *assets/main.js*, a jQuery event handler is wired up to grab the code from the Ace editor, when the form is submitted, and send the data somewhere (eventually to API Gateway) via an AJAX request.
 
 ## Lambda Setup
 
@@ -56,7 +58,7 @@ Within the [AWS Console](https://console.aws.amazon.com), navigate to the main [
 
 Give the function a name, like `code_execute_python`, and add a basic description - `Execute user-supplied Python code`. Select "Python 3.6" in the "Runtime" drop-down.
 
-Update the `lambda_handler`, the default entry point, function definition with:
+Within the inline code editor, update the `lambda_handler` - which is the default entry point for Lambda - function definition with:
 
 ```python
 import sys
@@ -222,3 +224,9 @@ Now, if the request is a success, then the appropriate message will be added to 
 ```
 
 Test it out!
+
+## Next Steps
+
+1. Production? 
+
+Most applications will require more robust solutions with HTTPS, authentication, and data stores.
