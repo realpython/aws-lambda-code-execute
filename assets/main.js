@@ -20,7 +20,7 @@ $('form').on('submit', (event) => {
 function grade(payload) {
   $.ajax({
     method: 'POST',
-    url: 'https://r8048dkaol.execute-api.us-east-1.amazonaws.com/v1/execute',
+    url: 'https://c0rue3ifh4.execute-api.us-east-1.amazonaws.com/v1/execute',
     dataType: 'json',
     contentType: 'application/json',
     data: JSON.stringify(payload)
