@@ -46,3 +46,5 @@ Test your lambda function via API Gateway with **curl**:
 ```python
 curl -H "Content-Type: application/json" -X POST -d '{"answer":"def sum(x,y):\n    return x-y"}' base_url/pyexecute
 ```
+
+Update your `assets/main.js` file with new **base_url**.
