@@ -1,5 +1,4 @@
 ## API Gateway config
-
 resource "aws_api_gateway_rest_api" "PyAPI" {
   name        = "TfServerlessPythonAPI"
   description = "API for Serverless Python Application Example"
@@ -29,6 +28,21 @@ resource "aws_api_gateway_integration" "LambdaIntegration" {
   uri                     = "${aws_lambda_function.PyLambdaFunction.invoke_arn}"
   }
 
+## Response mapping
+resource "aws_api_gateway_method_response" "200" {
+  rest_api_id = "${aws_api_gateway_rest_api.PyAPI.id}"
+  resource_id = "${aws_api_gateway_resource.ExecutePyResource.id}"
+  http_method = "${aws_api_gateway_method.ExecutePyMethod.http_method}"
+  status_code = "200"
+  }
+
+resource "aws_api_gateway_integration_response" "LambdaIntegrationResponse" {
+  rest_api_id = "${aws_api_gateway_rest_api.PyAPI.id}"
+  resource_id = "${aws_api_gateway_resource.ExecutePyResource.id}"
+  http_method = "${aws_api_gateway_method.ExecutePyMethod.http_method}"
+  status_code = "${aws_api_gateway_method_response.200.status_code}"
+  depends_on = ["aws_api_gateway_integration.LambdaIntegration"]
+  }                    
  
 ## API DEPLOYMENT
 resource "aws_api_gateway_deployment" "PyAPIDeployment" {
