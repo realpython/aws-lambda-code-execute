@@ -32,10 +32,10 @@ Deploy your application with your artifact already available in the s3 bucket
 
 `terraform apply -var="app_version=1.0.0"`
 
-You should get an output of your API Gateway **base_url**:
+Use `terraform output` to get an output of your API Gateway **base_url**: 
 
 ```python
-Outputs:
+terraform output
 base_url = https://95q1xx0fol.execute-api.eu-central-1.amazonaws.com/v1
 ```
 
@@ -44,7 +44,7 @@ Tests
 Test your lambda function via API Gateway with **curl**:
 
 ```python
-curl -H "Content-Type: application/json" -X POST -d '{"answer":"def sum(x,y):\n    return x-y"}' base_url/pyexecute
+curl -H "Content-Type: application/json" -X POST -d '{"answer":"def sum(x,y):\n    return x-y"}' $(terraform output base_url)/pyexecute
 ```
 
 Update your `assets/main.js` file with new **base_url**.
